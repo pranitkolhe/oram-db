@@ -54,7 +54,7 @@ const writeData = async () => {
     <div className="app">
       {/* Sidebar */}
       <div className="sidebar">
-        <h2>🔐 ORAM</h2>
+        <h2>ORAM</h2>
         <ul>
           <li className="active">Dashboard</li>
           <li>Write Data</li>
@@ -116,7 +116,7 @@ const writeData = async () => {
         <LogsPanel />
 
         <div className="treeBox">
-          <h3>🌳 ORAM Tree Visualization</h3>
+          <h3>ORAM Tree Visualization</h3>
           <Tree path={path} />
         </div>
       </div>

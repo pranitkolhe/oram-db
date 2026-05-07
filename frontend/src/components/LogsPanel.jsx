@@ -7,6 +7,7 @@ export default function LogsPanel() {
     try {
       const res = await fetch("http://localhost:4000/api/logs");
       const data = await res.json();
+      console.log(data)
       setLogs(data);
     } catch (err) {
       console.error(err);
@@ -22,7 +23,7 @@ export default function LogsPanel() {
 
   return (
     <div className="logsPanel">
-      <h2>📊 ORAM Activity Logs</h2>
+      <h2>ORAM Activity Logs</h2>
 
       {logs.length === 0 ? (
         <p>No activity yet...</p>

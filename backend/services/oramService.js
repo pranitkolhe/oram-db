@@ -22,15 +22,15 @@ let positionMap = {};
 async function writeData(key, value) {
   const newLeaf = getRandomLeaf();
   positionMap[key] = newLeaf;
-
+  console.log("New Leaf for Key", key, ":", newLeaf);
   const path = getPath(newLeaf);
+  console.log("Write Path:", path);
 
   // 1️⃣ Read all blocks from path
   const [rows] = await pool.query(
     `SELECT * FROM data_blocks WHERE bucket_id IN (?)`,
     [path]
   );
-
   // 2️⃣ Move to stash
   stash.push(...rows);
 
@@ -45,6 +45,7 @@ async function writeData(key, value) {
 
   // 4️⃣ Clear path in DB
   await pool.query(`DELETE FROM data_blocks WHERE bucket_id IN (?)`, [path]);
+
 
   // 5️⃣ Write back
   for (let bucket of path) {
@@ -85,8 +86,8 @@ async function writeData(key, value) {
     }
   }
 const pathStr = path.join(" -> ");
-
-logWriteOperation(key, "PATH: " + pathStr);
+console.log("stash is:", stash);
+logWriteOperation(key, "PATH: " + pathStr,stash.length);
 
 return {
   logs: getLogs(),
@@ -112,6 +113,7 @@ const [rows] = await pool.query(
 );
 
   stash.push(...rows);
+  console.log("stash is in read:", stash);
 
   // 2️⃣ Find block
   const block = stash.find(
@@ -146,11 +148,11 @@ const [rows] = await pool.query(
     }
 
     stash = stash.filter((b) => !bucketBlocks.includes(b));
-
+    
     while (bucketBlocks.length < BUCKET_SIZE) {
       bucketBlocks.push(generateDummyBlock(bucket));
     }
-
+    
     for (let b of bucketBlocks) {
       await pool.query(
         `INSERT INTO data_blocks 
@@ -160,8 +162,8 @@ const [rows] = await pool.query(
       );
     }
   }
-
-  logReadOperation(key, "PATH: " + pathStr, result);
+  
+  logReadOperation(key, "PATH: " + pathStr, result,stash.length);
 
  return {
   block_value: result || null,
